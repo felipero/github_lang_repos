@@ -10,7 +10,13 @@ defmodule GithubLangRepos.MixProject do
       compilers: [:phoenix, :gettext] ++ Mix.compilers(),
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
-      deps: deps()
+      deps: deps(),
+      preferred_cli_env: [
+        vcr: :test,
+        "vcr.delete": :test,
+        "vcr.check": :test,
+        "vcr.show": :test
+      ]
     ]
   end
 
@@ -43,7 +49,8 @@ defmodule GithubLangRepos.MixProject do
       {:gettext, "~> 0.11"},
       {:jason, "~> 1.0"},
       {:plug_cowboy, "~> 2.0"},
-      {:tentacat, "~> 1.4"}
+      {:tentacat, "~> 1.4"},
+      {:exvcr, "~> 0.10", only: :test}
     ]
   end
 

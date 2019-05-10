@@ -34,3 +34,5 @@ npm-debug.log
 /priv/static/
 
 .vscode/
+
+fixture/vcr_cassettes/
