@@ -3,7 +3,6 @@ defmodule GithubLangRepos.Github.Language do
   import Ecto.Changeset
 
   alias GithubLangRepos.{
-    Github.Language,
     Github.Repository
   }
 

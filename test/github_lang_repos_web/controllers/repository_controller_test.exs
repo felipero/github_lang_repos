@@ -2,7 +2,6 @@ defmodule GithubLangReposWeb.RepositoryControllerTest do
   use GithubLangReposWeb.ConnCase
 
   alias GithubLangRepos.{
-    Github,
     Github.Language,
     Github.Repository,
     Repo
@@ -23,6 +22,7 @@ defmodule GithubLangReposWeb.RepositoryControllerTest do
       score: 10.309712,
       owner: %{
         "avatar_url" => "https://avatars2.githubusercontent.com/u/4285147?v=4",
+        "html_url" => "https://github.com/jwilm",
         "login" => "jwilm",
         "url" => "https://api.github.com/users/jwilm"
       }

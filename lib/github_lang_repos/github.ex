@@ -1,5 +1,4 @@
 defmodule GithubLangRepos.Github do
-  import Ecto.Changeset
   import Ecto.Query, warn: false
 
   alias GithubLangRepos.{
@@ -10,24 +9,31 @@ defmodule GithubLangRepos.Github do
   }
 
   def get_from_github([language_name | tail]) do
-    {:ok, repos} = GithubApiRepo.get_language_top_five_repositories(language_name)
+    case GithubApiRepo.get_language_top_five_repositories(language_name) do
+      {:ok, repos} ->
+        language_changeset = Repo.get_by(Language, name: language_name) || %Language{}
 
-    language_changeset = Repo.get_by(Language, name: language_name) || %Language{}
+        changeset = Language.changeset(language_changeset, %{name: language_name})
 
-    changeset = Language.changeset(language_changeset, %{name: language_name})
+        language =
+          case(Repo.insert_or_update(changeset)) do
+            {:ok, lang} ->
+              create_repositories_from_github_data(lang, repos)
 
-    language =
-      case(Repo.insert_or_update(changeset)) do
-        {:ok, lang} ->
-          create_repositories_from_github_data(lang, repos)
-          Repo.preload(lang, repositories: from(r in Repository, order_by: [desc: :stars_count]))
+              Repo.preload(lang,
+                repositories: from(r in Repository, order_by: [desc: :stars_count])
+              )
 
-        {:error, error} ->
-          IO.inspect(error)
-          nil
-      end
+            {:error, error} ->
+              IO.inspect(error)
+              nil
+          end
 
-    [language] ++ get_from_github(tail)
+        [language] ++ get_from_github(tail)
+
+      {:error, status, errors} ->
+        IO.inspect(errors)
+    end
   end
 
   def get_from_github([]), do: []

@@ -18,6 +18,8 @@ config :github_lang_repos, GithubLangReposWeb.Endpoint,
   render_errors: [view: GithubLangReposWeb.ErrorView, accepts: ~w(html json)],
   pubsub: [name: GithubLangRepos.PubSub, adapter: Phoenix.PubSub.PG2]
 
+config :github_lang_repos, GithubLangRepos.Repo, github_token: System.get_env("GITHUB_AUTH_TOKEN")
+
 # Configures Elixir's Logger
 config :logger, :console,
   format: "$time $metadata[$level] $message\n",
