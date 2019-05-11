@@ -1,0 +1,23 @@
+<section>
+  <h1><%= gettext "Choose your languages" %></h1>
+    <%= form_for @conn, Routes.language_path(@conn, :index), [as: :search, method: :get], fn f -> %>
+      <%= text_input f, :selected_languages, value: @conn.assigns[:search][:selected_languages] %>
+      <!-- <input type="text" placeholder="<%= gettext "Elixir, Go, Rust, Scala, Clojure, etc..." %>"> -->
+      <button>Search</button>
+  <% end %>
+</section>
+
+<section id="results" class="row">
+<%= for language <- @languages do %>
+   <article class="column">
+    <h2><%= language.name %></h2>
+    <ul>
+    <%= for repository <- language.repositories do %>
+      <li>
+        <a target="_blank" href="<%= repository.html_url %>"><%= repository.full_name %></a>
+      </li>
+    <% end %>
+    </ul>
+  </article>
+<% end %>
+</section>

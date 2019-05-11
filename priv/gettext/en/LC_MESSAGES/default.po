@@ -1,0 +1,3 @@
+## From index.html.eex
+#  msgid "Choose your languages"
+#  msgstr "Fuuuuuuuuu GETTEXT!"

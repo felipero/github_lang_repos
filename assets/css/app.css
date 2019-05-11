@@ -1,3 +1,12 @@
 /* This file is for your main application css. */
 
 @import "./phoenix.css";
+
+#results {
+  border-top: 1px solid #e3e3e3;
+  margin-top: 10px;
+  padding: 30px;
+}
+#results > .column {
+  min-width: 25rem;
+}
