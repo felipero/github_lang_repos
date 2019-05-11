@@ -5,8 +5,8 @@ defmodule GithubLangRepos.Repo.Migrations.CreateRepositories do
     create table(:repositories, primary_key: false) do
       add(:id, :binary_id, primary_key: true)
       add(:name, :string)
-      add(:full_name, :string)
-      add(:private, :boolean, default: false, null: false)
+      add(:full_name, :string, null: false)
+      add(:private, :boolean, default: false)
       add(:html_url, :string)
       add(:description, :text)
       add(:api_url, :string)

@@ -2,6 +2,11 @@ defmodule GithubLangRepos.Github.Repository do
   use Ecto.Schema
   import Ecto.Changeset
 
+  alias GithubLangRepos.{
+    Github.Language
+    # Github.Repository,
+  }
+
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
   schema "repositories" do
@@ -18,29 +23,45 @@ defmodule GithubLangRepos.Github.Repository do
     field(:size, :integer)
     field(:stars_count, :integer)
     field(:watchers_count, :integer)
-    field(:language_id, :binary_id)
+    # field(:language_id, :binary_id)
+
+    belongs_to(:language, Language)
 
     timestamps()
   end
 
-  @doc false
+  @allowed_fields [
+    :name,
+    :full_name,
+    :private,
+    :html_url,
+    :description,
+    :api_url,
+    :github_created_at,
+    :size,
+    :stars_count,
+    :watchers_count,
+    :forks_count,
+    :score,
+    :owner
+  ]
+
   def changeset(repository, attrs) do
+    converted_attrs =
+      Map.merge(attrs, %{
+        api_url: attrs[:api_url] || attrs["url"],
+        github_created_at: attrs[:github_created_at] || attrs["created_at"],
+        stars_count: attrs[:stars_count] || attrs["stargazers_count"]
+      })
+      |> Map.new(fn {key, val} ->
+        cond do
+          is_atom(key) -> {key, val}
+          true -> {String.to_atom(key), val}
+        end
+      end)
+
     repository
-    |> cast(attrs, [
-      :name,
-      :full_name,
-      :private,
-      :html_url,
-      :description,
-      :api_url,
-      :github_created_at,
-      :size,
-      :stars_count,
-      :watchers_count,
-      :forks_count,
-      :score,
-      :owner
-    ])
+    |> cast(converted_attrs, @allowed_fields)
     |> validate_required([
       :name,
       :full_name,
@@ -55,6 +76,7 @@ defmodule GithubLangRepos.Github.Repository do
       :score,
       :owner
     ])
+    |> foreign_key_constraint(:language_id)
     |> unique_constraint(:full_name)
   end
 end

@@ -1,90 +1,52 @@
 defmodule GithubLangRepos.Github do
-  @moduledoc """
-  The Github context.
-  """
+  import Ecto.Changeset
   import Ecto.Query, warn: false
-  alias GithubLangRepos.Github.Repository
 
-  alias GithubLangRepos.Github.Language
+  alias GithubLangRepos.{
+    Github.Repository,
+    Github.Language,
+    GithubApiRepo,
+    Repo
+  }
 
-  @doc """
-  Returns the list of languages.
+  def get_from_github([language_name | tail]) do
+    {:ok, repos} = GithubApiRepo.get_language_top_five_repositories(language_name)
 
-  ## Examples
+    language_changeset = Repo.get_by(Language, name: language_name) || %Language{}
 
-      iex> list_languages()
-      [%Language{}, ...]
+    changeset = Language.changeset(language_changeset, %{name: language_name})
 
-  """
-  def list_languages do
-    GithubLangRepos.Repo.all(Language)
+    language =
+      case(Repo.insert_or_update(changeset)) do
+        {:ok, lang} ->
+          create_repositories_from_github_data(lang, repos)
+          Repo.preload(lang, :repositories)
+
+        {:error, error} ->
+          IO.inspect(error)
+          nil
+      end
+
+    [language] ++ get_from_github(tail)
   end
 
-  @doc """
-  Creates a language.
+  def get_from_github([]), do: []
 
-  ## Examples
+  defp create_repositories_from_github_data(language, [repo | repos]) do
+    changeset =
+      Repository.changeset(%Repository{}, repo)
+      |> Ecto.Changeset.put_assoc(:language, language)
 
-      iex> create_language(%{field: value})
-      {:ok, %Language{}}
+    case Repo.insert(changeset, on_conflict: :replace_all, conflict_target: :full_name) do
+      {:ok, repository} ->
+        [repository] ++ create_repositories_from_github_data(language, repos)
 
-      iex> create_language(%{field: bad_value})
-      {:error, %Ecto.Changeset{}}
-
-  """
-  def create_language(attrs \\ %{}) do
-    %Language{}
-    |> Language.changeset(attrs)
-    |> GithubLangRepos.Repo.insert()
+      {:error, error} ->
+        IO.inspect(error)
+    end
   end
 
-  @doc """
-  Deletes a Language.
+  defp create_repositories_from_github_data(language, []), do: []
 
-  ## Examples
-
-      iex> delete_language(language)
-      {:ok, %Language{}}
-
-      iex> delete_language(language)
-      {:error, %Ecto.Changeset{}}
-
-  """
-  def delete_language(%Language{} = language) do
-    GithubLangRepos.Repo.delete(language)
-  end
-
-  @doc """
-  Gets a single repository.
-
-  Raises `Ecto.NoResultsError` if the Repo does not exist.
-
-  ## Examples
-
-      iex> get_repository!(123)
-      %Repository{}
-
-      iex> get_repository!(456)
-      ** (Ecto.NoResultsError)
-
-  """
   def get_repository!(id), do: GithubLangRepos.Repo.get!(Repository, id)
-
-  @doc """
-  Creates a repository.
-
-  ## Examples
-
-      iex> create_repository(%{field: value})
-      {:ok, %Repository{}}
-
-      iex> create_repository(%{field: bad_value})
-      {:error, %Ecto.Changeset{}}
-
-  """
-  def create_repository(attrs \\ %{}) do
-    %Repository{}
-    |> Repository.changeset(attrs)
-    |> GithubLangRepos.Repo.insert()
-  end
 end
