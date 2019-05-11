@@ -20,7 +20,7 @@ defmodule GithubLangRepos.Github do
       case(Repo.insert_or_update(changeset)) do
         {:ok, lang} ->
           create_repositories_from_github_data(lang, repos)
-          Repo.preload(lang, :repositories)
+          Repo.preload(lang, repositories: from(r in Repository, order_by: [desc: :stars_count]))
 
         {:error, error} ->
           IO.inspect(error)

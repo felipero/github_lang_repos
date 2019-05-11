@@ -6,7 +6,7 @@ defmodule GithubLangReposWeb.LanguageController do
 
   def index(conn, params) do
     langs = params["search"]["selected_languages"] || "Go, Elixir, Rust"
-    languages = Github.get_from_github(String.split(langs, ","))
+    languages = Github.get_from_github(Enum.map(String.split(langs, ","), &String.trim/1))
 
     conn
     |> assign(:search, %{

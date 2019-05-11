@@ -10,3 +10,8 @@
 #results > .column {
   min-width: 25rem;
 }
+
+.inline {
+  display: inline-block;
+  margin-right: 10px;
+}

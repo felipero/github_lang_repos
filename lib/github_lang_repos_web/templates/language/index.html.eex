@@ -14,7 +14,7 @@
     <ul>
     <%= for repository <- language.repositories do %>
       <li>
-        <a target="_blank" href="<%= repository.html_url %>"><%= repository.full_name %></a>
+        <a href="<%= Routes.repository_path(@conn, :show, repository) %>"><%= repository.full_name %></a>
       </li>
     <% end %>
     </ul>

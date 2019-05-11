@@ -23,7 +23,6 @@ defmodule GithubLangRepos.Github.Repository do
     field(:size, :integer)
     field(:stars_count, :integer)
     field(:watchers_count, :integer)
-    # field(:language_id, :binary_id)
 
     belongs_to(:language, Language)
 

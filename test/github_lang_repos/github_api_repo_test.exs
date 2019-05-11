@@ -5,19 +5,13 @@ defmodule GithubLangRepos.GithubApiRepoTest do
   alias GithubLangRepos.GithubApiRepo
 
   describe "GithubApiRepo" do
-    # alias GithubLangRepos.Github.Language
-    # alias GithubLangRepos.Github.Repository
-
-    # @valid_attrs %{name: "some name"}
-    # @invalid_attrs %{name: nil}
-
     test "get_language_top_five_repositories/1 gets 5 repositories from the indicated language in github" do
       use_cassette "search#repositories#Go" do
-        {:ok, repos} = GithubApiRepo.get_language_top_five_repositories("Go")
-        second_repo = Enum.at(repos, 1)
-        assert second_repo["name"] == "moby"
-        assert second_repo["full_name"] == "moby/moby"
-        assert second_repo["language"] == "Go"
+        {:ok, repos} = GithubApiRepo.get_language_top_five_repositories("Rust")
+        second_repo = Enum.at(repos, 0)
+        assert second_repo["name"] == "996.ICU"
+        assert second_repo["full_name"] == "996icu/996.ICU"
+        assert second_repo["language"] == "Rust"
       end
     end
 

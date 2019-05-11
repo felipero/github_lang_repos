@@ -1,0 +1,14 @@
+<section>
+  <h1><%= @repository.full_name %></h1>
+  <a target="_blank" href="<%= @repository.html_url %>"><%= @repository.html_url %></a>
+</section>
+
+<section id="results" class="row">
+   <article class="column">
+    <div><label class="inline">Description:</label><%= @repository.description %></div>
+    <div><label class="inline">User:</label><%= link @repository.owner["login"], to: @repository.owner["html_url"], target: "_blank" %></div>
+    <div><label class="inline">Forks:</label><%= @repository.forks_count %></div>
+    <div><label class="inline">Stars:</label><%= @repository.stars_count %></div>
+    <div><label class="inline">Watchers:</label><%= @repository.watchers_count %></div>
+  </article>
+</section>
